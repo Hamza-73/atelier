@@ -15,6 +15,15 @@ const LAYOUT = {
   maison: { col: "lg:col-span-7", aspect: "aspect-[16/9]", offset: "lg:-mt-12" },
 };
 
+const FALLBACK_PATTERN = [
+  { col: "lg:col-span-7", aspect: "aspect-[4/3]", offset: "" },
+  { col: "lg:col-span-5", aspect: "aspect-[3/4]", offset: "lg:mt-16" },
+  { col: "lg:col-span-5", aspect: "aspect-square", offset: "" },
+  { col: "lg:col-span-7", aspect: "aspect-[16/9]", offset: "lg:-mt-10" },
+  { col: "lg:col-span-6", aspect: "aspect-[4/5]", offset: "lg:mt-8" },
+  { col: "lg:col-span-6", aspect: "aspect-[3/4]", offset: "" },
+];
+
 const containerStagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
@@ -91,7 +100,7 @@ export default function Gallery() {
                 Good design begins with a point of view.
               </h1>
               <p className="mt-4 text-base text-ink/60">
-                Four starting points, each a complete editorial position. Choose one and make it yours.
+                {TEMPLATES.length} starting points, each a complete editorial position. Choose one and make it yours.
               </p>
             </div>
 
@@ -125,7 +134,7 @@ export default function Gallery() {
               className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-8"
             >
               {visibleTemplates.map((template, i) => {
-                const layout = LAYOUT[template.id] || { col: "lg:col-span-6", aspect: "aspect-[4/3]", offset: "" };
+                const layout = LAYOUT[template.id] || FALLBACK_PATTERN[i % FALLBACK_PATTERN.length];
                 return (
                   <motion.div
                     key={template.id}
