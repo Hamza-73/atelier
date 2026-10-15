@@ -32,8 +32,8 @@ export default function Marquee() {
           >
             {word}
           </span>
-          <span className="text-terracotta" aria-hidden="true">
-            ✳
+          <span className="select-none px-1 text-[0.4em] text-ink/30" aria-hidden="true">
+            •
           </span>
         </span>
       ))}
