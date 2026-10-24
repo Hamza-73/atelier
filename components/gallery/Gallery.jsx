@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, FolderOpen, Loader2 } from "lucide-react";
+import { ArrowUpRight, FolderOpen, Loader2, Pencil, Copy, Trash2, Check, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { gsap, ScrollTrigger, useIsomorphicLayoutEffect } from "@/lib/gsap";
 import { useEditor } from "@/lib/store";
 import { TEMPLATES } from "@/data/templates";
-import { listDesigns, getDesign } from "@/lib/actions/designs";
+import { listDesigns, getDesign, renameDesign, duplicateDesign, deleteDesign } from "@/lib/actions/designs";
 import IntroOverlay from "@/components/home/IntroOverlay";
 import HomeNav from "@/components/home/HomeNav";
 import HomeHero from "@/components/home/HomeHero";
@@ -36,6 +36,186 @@ function ScrollProgress() {
     <div className="fixed inset-x-0 top-0 z-50 h-[2px] bg-transparent">
       <div ref={ref} className="h-full origin-left scale-x-0 bg-terracotta" />
     </div>
+  );
+}
+
+function SavedDesignRow({ entry, isSignedIn, opening, onOpen, dispatch }) {
+  const [renaming, setRenaming] = useState(false);
+  const [draftName, setDraftName] = useState(entry.name);
+  const [busy, setBusy] = useState(null); // "rename" | "duplicate" | "delete"
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function commitRename() {
+    const name = draftName.trim();
+    if (!name || name === entry.name) {
+      setRenaming(false);
+      setDraftName(entry.name);
+      return;
+    }
+    setBusy("rename");
+    setError(null);
+    try {
+      await renameDesign(entry.savedId, name);
+      dispatch({ type: "RENAME_SAVED_DESIGN", savedId: entry.savedId, name });
+      setRenaming(false);
+    } catch {
+      setError("Couldn't rename");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleDuplicate() {
+    setBusy("duplicate");
+    setError(null);
+    try {
+      const result = await duplicateDesign(entry.savedId);
+      dispatch({
+        type: "ADD_SAVED_DESIGN",
+        entry: { savedId: result.id, name: `${entry.name} (Copy)`, templateId: entry.templateId, updatedAt: result.updatedAt },
+      });
+    } catch {
+      setError("Couldn't duplicate");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleDelete() {
+    setBusy("delete");
+    setError(null);
+    try {
+      await deleteDesign(entry.savedId);
+      dispatch({ type: "REMOVE_SAVED_DESIGN", savedId: entry.savedId });
+    } catch {
+      setError("Couldn't delete");
+      setBusy(null);
+      setConfirmDelete(false);
+    }
+  }
+
+  return (
+    <li data-saved-row className="border-b border-ink/15">
+      <div className="flex items-center justify-between gap-6 py-6">
+        <button
+          type="button"
+          onClick={() => !renaming && onOpen(entry.savedId)}
+          disabled={opening === entry.savedId || renaming}
+          className="group flex min-w-0 flex-1 items-center justify-between gap-6 text-left transition-colors hover:bg-ink/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta disabled:cursor-default"
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            {renaming ? (
+              <input
+                autoFocus
+                value={draftName}
+                onClick={(e) => e.stopPropagation()}
+                onChange={(e) => setDraftName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commitRename();
+                  if (e.key === "Escape") {
+                    setRenaming(false);
+                    setDraftName(entry.name);
+                  }
+                }}
+                className="w-full max-w-sm border-b border-ink/30 bg-transparent text-2xl outline-none"
+                style={{ fontFamily: "var(--font-serif)" }}
+              />
+            ) : (
+              <span className="truncate text-2xl" style={{ fontFamily: "var(--font-serif)" }}>
+                {entry.name}
+              </span>
+            )}
+            <span className="text-xs text-ink/50">
+              {error || `Saved ${new Date(entry.updatedAt).toLocaleString()}`}
+            </span>
+          </span>
+          {opening === entry.savedId ? (
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin text-ink/40" />
+          ) : (
+            <ArrowUpRight className="h-5 w-5 shrink-0 text-ink/40 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          )}
+        </button>
+
+        {isSignedIn && (
+          <div className="flex shrink-0 items-center gap-1.5">
+            {renaming ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Confirm rename"
+                  onClick={commitRename}
+                  disabled={busy === "rename"}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-50"
+                >
+                  {busy === "rename" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Cancel rename"
+                  onClick={() => {
+                    setRenaming(false);
+                    setDraftName(entry.name);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </>
+            ) : confirmDelete ? (
+              <>
+                <span className="text-xs text-ink/50">Delete?</span>
+                <button
+                  type="button"
+                  aria-label="Confirm delete"
+                  onClick={handleDelete}
+                  disabled={busy === "delete"}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-terracotta transition-colors hover:bg-terracotta/10 disabled:opacity-50"
+                >
+                  {busy === "delete" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Cancel delete"
+                  onClick={() => setConfirmDelete(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  aria-label="Rename"
+                  onClick={() => setRenaming(true)}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Duplicate"
+                  onClick={handleDuplicate}
+                  disabled={busy === "duplicate"}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-50"
+                >
+                  {busy === "duplicate" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Copy className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Delete"
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex h-8 w-8 items-center justify-center rounded-sm text-ink/60 transition-colors hover:bg-terracotta/10 hover:text-terracotta"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -126,28 +306,14 @@ function SavedDesigns({ onStart }) {
       ) : (
         <ul className="mt-12 border-t border-ink/15">
           {state.savedDesigns.map((entry) => (
-            <li key={entry.savedId} data-saved-row className="border-b border-ink/15">
-              <button
-                type="button"
-                onClick={() => (isSignedIn ? openSaved(entry.savedId) : dispatch({ type: "OPEN_SAVED", id: entry.savedId }))}
-                disabled={opening === entry.savedId}
-                className="group flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:bg-ink/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta disabled:opacity-60"
-              >
-                <span className="flex flex-col gap-1">
-                  <span className="text-2xl" style={{ fontFamily: "var(--font-serif)" }}>
-                    {entry.name}
-                  </span>
-                  <span className="text-xs text-ink/50">
-                    Saved {new Date(entry.updatedAt).toLocaleString()}
-                  </span>
-                </span>
-                {opening === entry.savedId ? (
-                  <Loader2 className="h-5 w-5 shrink-0 animate-spin text-ink/40" />
-                ) : (
-                  <ArrowUpRight className="h-5 w-5 shrink-0 text-ink/40 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                )}
-              </button>
-            </li>
+            <SavedDesignRow
+              key={entry.savedId}
+              entry={entry}
+              isSignedIn={isSignedIn}
+              opening={opening}
+              dispatch={dispatch}
+              onOpen={(savedId) => (isSignedIn ? openSaved(savedId) : dispatch({ type: "OPEN_SAVED", id: savedId }))}
+            />
           ))}
         </ul>
       )}
