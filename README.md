@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Atelier
 
-## Getting Started
+A website builder for architecture, interiors and design studios. Pick a
+template, edit it visually, save your work to your account, and export it
+as a static site you can host anywhere.
 
-First, run the development server:
+## What it does
+
+- **Templates.** ~19 starter templates for studio sites (hero, gallery,
+  about, services, projects, testimonials, contact, nav, footer), each
+  built from the same section components so switching palette or font
+  restyles the whole site at once.
+- **Visual editor.** Drag-free, panel-based editing: reorder or hide
+  sections, edit text and images, change variant/spacing/alignment, pick a
+  colour palette and font pairing, with live desktop/tablet/mobile preview.
+- **Accounts.** Sign up / sign in (via Clerk), save designs to your
+  account, and come back to rename, duplicate or delete them later.
+- **Export.** Download a finished design as a plain HTML + CSS + JS `.zip`
+  — no build step, no server required — ready to drag onto Netlify Drop,
+  push to Vercel, or publish via GitHub Pages.
+
+## Stack
+
+- [Next.js](https://nextjs.org) 16 (App Router), React 19, plain
+  JavaScript (not TypeScript)
+- [Clerk](https://clerk.com) for authentication
+- [Neon](https://neon.tech) (Postgres) + [Drizzle ORM](https://orm.drizzle.team)
+  for saved designs
+- [Tailwind CSS](https://tailwindcss.com) v4, [GSAP](https://gsap.com) and
+  [Motion](https://motion.dev) for animation
+- [fflate](https://github.com/101arrowz/fflate) for building the export zip
+
+> This project's Next.js version has breaking changes from what most
+> tooling (including AI assistants) expects. See [AGENTS.md](AGENTS.md).
+
+## Getting started
+
+```bash
+npm install
+```
+
+Create `.env.local` with:
+
+```bash
+# Clerk — https://dashboard.clerk.com
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+
+# Postgres — e.g. a Neon project's pooled connection string
+DATABASE_URL=
+```
+
+Push the database schema (creates the `designs` table):
+
+```bash
+npm run db:push
+```
+
+Then run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                   routes: home/editor (single page), sign-in, sign-up,
+                        /api/export
+components/
+  canvas/               the section components every template is built
+                        from (Nav, Hero, Gallery, About, …) — also what
+                        gets exported
+  editor/               the visual editor UI (toolbar, layers, properties)
+  gallery/, home/        the marketing homepage + template picker
+  publish/               preview mode and the export dialog
+data/                   starter templates, image list, colour/font themes
+db/                     Drizzle schema + client (Neon)
+lib/
+  actions/designs.js    server actions: save/list/get/rename/duplicate/
+                        delete a saved design, scoped to the signed-in user
+  export/               builds the exported site's HTML/CSS/JS/zip
+  store.js              the editor's state (React context + reducer)
+  validation/design.js  validates a design's shape before it's saved
+```
 
-## Learn More
+## Useful scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Script | What it does |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build (also rebuilds `lib/export/site.css`) |
+| `npm run db:push` | Push the Drizzle schema to the database |
+| `npm run db:studio` | Open Drizzle Studio to browse the database |
+| `npm run build:export-css` | Rebuild the standalone CSS used in exports |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deployed on [Vercel](https://vercel.com). Add the same environment
+variables as above (the `DATABASE_URL` from your production Postgres) in
+**Project → Settings → Environment Variables**, then push to the branch
+Vercel watches.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Clerk's production instance needs a custom domain you control DNS for —
+a default `*.vercel.app` domain can't verify it. Until then, Clerk's
+development keys work fine in production, just with its dev-mode banner
+and lower rate limits.
