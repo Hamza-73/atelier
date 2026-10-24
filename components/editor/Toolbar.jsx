@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PanelLeft, SlidersHorizontal, Save, Download, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, PanelLeft, SlidersHorizontal, Save, Download, Globe, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useEditor } from "@/lib/store";
@@ -98,6 +98,19 @@ export default function Toolbar() {
           <span className="hidden sm:inline">
             {error ? error : saving ? "Saving" : justSaved ? "Saved" : "Save"}
           </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => (isSignedIn ? dispatch({ type: "SET_DIALOG", dialog: "share" }) : openSignIn())}
+          aria-label="Publish to web"
+          className={`ml-1 flex h-8 items-center gap-1.5 rounded-sm border px-2.5 text-[11px] uppercase tracking-[0.15em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta sm:px-3 ${
+            state.design?.isPublished
+              ? "border-olive bg-olive/10 text-olive hover:border-olive"
+              : "border-warmgrey text-ink hover:border-ink"
+          }`}
+        >
+          <Globe className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">{state.design?.isPublished ? "Published" : "Publish"}</span>
         </button>
         <button
           type="button"

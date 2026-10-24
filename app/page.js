@@ -6,6 +6,7 @@ import Gallery from "@/components/gallery/Gallery";
 import Editor from "@/components/editor/Editor";
 import PreviewMode from "@/components/publish/PreviewMode";
 import PublishDialog from "@/components/publish/PublishDialog";
+import ShareDialog from "@/components/publish/ShareDialog";
 
 const fade = {
   initial: { opacity: 0 },
@@ -44,6 +45,7 @@ export default function Page() {
       <EditorProvider>
         <ScreenSwitch />
         <PublishDialog />
+        <ShareDialog />
       </EditorProvider>
     </MotionConfig>
   );
