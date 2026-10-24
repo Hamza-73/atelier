@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import { Cormorant_Garamond, Playfair_Display, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -49,7 +50,11 @@ export default function RootLayout({ children }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="flex h-full min-h-screen flex-col bg-paper font-sans text-ink">{children}</body>
+      <body className="flex h-full min-h-screen flex-col bg-paper font-sans text-ink">
+        <ClerkProvider>
+          {children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }

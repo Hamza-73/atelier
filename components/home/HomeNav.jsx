@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { gsap } from "@/lib/gsap";
 import { useEditor } from "@/lib/store";
 import { TEMPLATES } from "@/data/templates";
@@ -85,6 +86,29 @@ export default function HomeNav({ ready, view, onShowWork, onShowSaved }) {
           </button>
           <span data-nav-item>
             <DarkModeToggle />
+          </span>
+          <span data-nav-item className="flex items-center gap-3">
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button
+                  type="button"
+                  className="text-[11px] uppercase tracking-[0.18em] text-ink/50 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
+                >
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button
+                  type="button"
+                  className="border border-ink px-4 py-2 text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-ink hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2"
+                >
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton afterSignOutUrl="/" />
+            </Show>
           </span>
         </nav>
       </div>
