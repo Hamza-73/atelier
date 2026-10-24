@@ -46,7 +46,7 @@ export async function POST(request) {
   try {
     siteCss = await readFile(path.join(process.cwd(), "lib/export/site.css"), "utf8");
   } catch {
-    return Response.json({ error: "Export stylesheet missing — run `npm run build:export-css`" }, { status: 500 });
+    return Response.json({ error: "Export stylesheet missing  run `npm run build:export-css`" }, { status: 500 });
   }
 
   const zipped = zipSync(

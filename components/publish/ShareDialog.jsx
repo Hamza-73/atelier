@@ -76,7 +76,7 @@ export default function ShareDialog() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      /* clipboard unavailable — link is still shown and selectable */
+      /* clipboard unavailable  link is still shown and selectable */
     }
   }
 
@@ -123,7 +123,7 @@ export default function ShareDialog() {
                 <>
                   <div className="flex items-center gap-2 text-sm text-olive">
                     <Globe className="h-4 w-4" />
-                    Live — anyone with this link can view it
+                    Live  anyone with this link can view it
                   </div>
                   <div className="flex items-center justify-between gap-2 border border-warmgrey bg-ivory px-3 py-2.5">
                     <span className="truncate text-sm text-ink">{publicUrl}</span>
@@ -138,7 +138,7 @@ export default function ShareDialog() {
                     </button>
                   </div>
                   <p className="text-xs text-ink/40">
-                    This page always reflects your latest save — edit and save again to update it live.
+                    This page always reflects your latest save  edit and save again to update it live.
                   </p>
                   <div className="flex gap-3 pt-1">
                     <a
@@ -163,7 +163,7 @@ export default function ShareDialog() {
               ) : (
                 <>
                   <p className="text-sm text-ink/70">
-                    Get a public link anyone can open — no account or export needed on their end.
+                    Get a public link anyone can open  no account or export needed on their end.
                   </p>
                   {error && (
                     <div className="flex items-center gap-2 text-sm text-terracotta">

@@ -48,7 +48,7 @@ export default function Nav({ section }) {
         </button>
       </div>
       {/* Always rendered (not conditionally mounted) so a static DOM
-          capture — see lib/export/render.js — includes this markup
+          capture  see lib/export/render.js  includes this markup
           whether the menu happened to be open or closed at export time.
           The flex/hidden class, not React state, controls visibility. */}
       <ul

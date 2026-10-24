@@ -13,7 +13,7 @@ async function PublishedSite({ params }) {
 
 // Public, unauthenticated: anyone with the link can view a published
 // design, rendered live from its current saved state (not a frozen
-// snapshot — editing and re-saving updates this page too). Wrapped in
+// snapshot  editing and re-saving updates this page too). Wrapped in
 // Suspense because reading `params` and hitting the database is dynamic,
 // required under this project's cacheComponents setting.
 export default function PublishedSitePage({ params }) {

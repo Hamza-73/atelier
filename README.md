@@ -16,7 +16,7 @@ as a static site you can host anywhere.
 - **Accounts.** Sign up / sign in (via Clerk), save designs to your
   account, and come back to rename, duplicate or delete them later.
 - **Export.** Download a finished design as a plain HTML + CSS + JS `.zip`
-  — no build step, no server required — ready to drag onto Netlify Drop,
+   no build step, no server required  ready to drag onto Netlify Drop,
   push to Vercel, or publish via GitHub Pages.
 
 ## Stack
@@ -42,7 +42,7 @@ npm install
 Create `.env.local` with:
 
 ```bash
-# Clerk — https://dashboard.clerk.com
+# Clerk  https://dashboard.clerk.com
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
@@ -50,7 +50,7 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 
-# Postgres — e.g. a Neon project's pooled connection string
+# Postgres  e.g. a Neon project's pooled connection string
 DATABASE_URL=
 ```
 
@@ -75,7 +75,7 @@ app/                   routes: home/editor (single page), sign-in, sign-up,
                         /api/export
 components/
   canvas/               the section components every template is built
-                        from (Nav, Hero, Gallery, About, …) — also what
+                        from (Nav, Hero, Gallery, About, …)  also what
                         gets exported
   editor/               the visual editor UI (toolbar, layers, properties)
   gallery/, home/        the marketing homepage + template picker
@@ -107,7 +107,7 @@ variables as above (the `DATABASE_URL` from your production Postgres) in
 **Project → Settings → Environment Variables**, then push to the branch
 Vercel watches.
 
-Clerk's production instance needs a custom domain you control DNS for —
+Clerk's production instance needs a custom domain you control DNS for 
 a default `*.vercel.app` domain can't verify it. Until then, Clerk's
 development keys work fine in production, just with its dev-mode banner
 and lower rate limits.

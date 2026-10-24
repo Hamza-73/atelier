@@ -143,7 +143,7 @@ export default function PublishDialog() {
     <>
       {/* Rendered off-screen (not display:none, so layout/measurement is
           real) purely so its finished DOM can be captured as the export's
-          HTML — see lib/export/render.js for how it's assembled into a zip. */}
+          HTML  see lib/export/render.js for how it's assembled into a zip. */}
       {open && isSignedIn && (
         <div ref={captureRef} aria-hidden style={{ position: "fixed", top: 0, left: "-99999px", width: 1280 }}>
           <Site design={state.design} editable={false} />

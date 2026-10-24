@@ -12,7 +12,7 @@ export const designsTable = pgTable(
     data: jsonb().notNull(), // { paletteId, fontId, colorOverrides, sections }
     schemaVersion: integer("schema_version").notNull().default(1),
     // When published, the design is viewable by anyone at /s/[publicSlug],
-    // rendered live from this row (not a frozen snapshot — editing and
+    // rendered live from this row (not a frozen snapshot  editing and
     // saving updates the live published page too).
     isPublished: boolean("is_published").notNull().default(false),
     publicSlug: text("public_slug"),

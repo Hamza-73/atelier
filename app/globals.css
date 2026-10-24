@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Monochrome system. Token names are legacy — read them as:
+  /* Monochrome system. Token names are legacy  read them as:
      ink = foreground, paper = page, ivory = surface, surround = canvas,
      warmgrey = hairline border, olive = muted text, terracotta = accent. */
   --color-ivory: #f1f1ef;
