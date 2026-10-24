@@ -9,6 +9,7 @@ export default function Nav({ section }) {
   const [open, setOpen] = useState(false);
   const links = props.links || [];
   const centered = variant === "centered-stack";
+  const menuId = `${section.id}-mobile-menu`;
 
   return (
     <nav className="relative border-b border-[var(--border)] bg-[var(--bg)]">
@@ -33,6 +34,7 @@ export default function Nav({ section }) {
         </ul>
         <button
           type="button"
+          data-nav-toggle={menuId}
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
@@ -41,18 +43,24 @@ export default function Nav({ section }) {
             centered && "absolute right-6 top-5"
           )}
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Menu className={cn("h-5 w-5", open && "hidden")} data-icon="menu" />
+          <X className={cn("h-5 w-5", !open && "hidden")} data-icon="close" />
         </button>
       </div>
-      {open && (
-        <ul className="flex flex-col gap-4 border-t border-[var(--border)] px-6 py-5 @3xl:hidden">
-          {links.map((link, i) => (
-            <li key={i} className="text-[12px] uppercase tracking-[0.15em] text-[var(--text)]/80">
-              {link.label}
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Always rendered (not conditionally mounted) so a static DOM
+          capture — see lib/export/render.js — includes this markup
+          whether the menu happened to be open or closed at export time.
+          The flex/hidden class, not React state, controls visibility. */}
+      <ul
+        id={menuId}
+        className={cn("flex-col gap-4 border-t border-[var(--border)] px-6 py-5 @3xl:hidden", open ? "flex" : "hidden")}
+      >
+        {links.map((link, i) => (
+          <li key={i} className="text-[12px] uppercase tracking-[0.15em] text-[var(--text)]/80">
+            {link.label}
+          </li>
+        ))}
+      </ul>
     </nav>
   );
 }

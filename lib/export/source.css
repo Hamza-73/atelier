@@ -1,0 +1,10 @@
+/* Standalone stylesheet for exported sites. Scans only the canvas section
+   components, so exported CSS stays small — the editor/home/UI chrome
+   classes never make it in. Rebuild with `npm run build:export-css`
+   whenever a canvas component's class names change. */
+@import "tailwindcss";
+@source "../../components/canvas/**/*.jsx";
+
+/* Canvas sections read theme colours from CSS variables set inline by
+   lib/export/render.js (mirrors data/themes.js#themeToCssVars), so no
+   color tokens are needed here — only layout/typography utilities. */

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PanelLeft, SlidersHorizontal, Save, Rocket, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, PanelLeft, SlidersHorizontal, Save, Download, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useEditor } from "@/lib/store";
@@ -102,11 +102,11 @@ export default function Toolbar() {
         <button
           type="button"
           onClick={() => dispatch({ type: "SET_DIALOG", dialog: "publish" })}
-          aria-label="Publish"
+          aria-label="Export"
           className="flex h-8 items-center gap-1.5 rounded-sm bg-ink px-2.5 text-[11px] uppercase tracking-[0.15em] text-paper transition-colors hover:bg-terracotta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 sm:px-3"
         >
-          <Rocket className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Publish</span>
+          <Download className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Export</span>
         </button>
       </div>
     </header>
