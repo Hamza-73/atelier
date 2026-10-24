@@ -109,7 +109,7 @@ export default function HomeFooter({ onStart }) {
 
         <div className="flex flex-col gap-2 text-[11px] uppercase tracking-[0.18em] text-ink/50 sm:items-end">
           <span>{TEMPLATES.length} templates 5 palettes 9 section types</span>
-          <span>© 2026 Atelier. Built with Next.js &amp; GSAP.</span>
+          <span>© 2026 Atelier</span>
         </div>
       </div>
     </footer>
