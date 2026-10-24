@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, FolderOpen } from "lucide-react";
+import { ArrowUpRight, FolderOpen, Loader2 } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { gsap, ScrollTrigger, useIsomorphicLayoutEffect } from "@/lib/gsap";
 import { useEditor } from "@/lib/store";
 import { TEMPLATES } from "@/data/templates";
+import { listDesigns, getDesign } from "@/lib/actions/designs";
 import IntroOverlay from "@/components/home/IntroOverlay";
 import HomeNav from "@/components/home/HomeNav";
 import HomeHero from "@/components/home/HomeHero";
@@ -39,7 +41,40 @@ function ScrollProgress() {
 
 function SavedDesigns({ onStart }) {
   const { state, dispatch } = useEditor();
+  const { isSignedIn } = useUser();
   const ref = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [opening, setOpening] = useState(null);
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      setLoading(false);
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    listDesigns()
+      .then((designs) => {
+        if (active) dispatch({ type: "HYDRATE_SAVED_DESIGNS", designs });
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isSignedIn, dispatch]);
+
+  async function openSaved(savedId) {
+    setOpening(savedId);
+    try {
+      const design = await getDesign(savedId);
+      dispatch({ type: "LOAD_SERVER_DESIGN", design });
+    } catch {
+      setOpening(null);
+    }
+  }
 
   useIsomorphicLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -63,10 +98,15 @@ function SavedDesigns({ onStart }) {
         Saved Designs
       </h2>
       <p className="mt-4 max-w-lg text-base text-ink/60">
-        Work saved in this session, ready to pick back up.
+        {isSignedIn ? "Saved to your account, ready to pick back up." : "Sign in to save your work and come back to it anytime."}
       </p>
 
-      {state.savedDesigns.length === 0 ? (
+      {loading ? (
+        <div data-saved-row className="mt-12 flex items-center gap-3 border border-dashed border-warmgrey px-8 py-16 text-ink/50">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading your saved designs…
+        </div>
+      ) : state.savedDesigns.length === 0 ? (
         <div
           data-saved-row
           className="mt-12 flex flex-col items-start gap-5 border border-dashed border-warmgrey px-8 py-16"
@@ -89,8 +129,9 @@ function SavedDesigns({ onStart }) {
             <li key={entry.savedId} data-saved-row className="border-b border-ink/15">
               <button
                 type="button"
-                onClick={() => dispatch({ type: "OPEN_SAVED", id: entry.savedId })}
-                className="group flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:bg-ink/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
+                onClick={() => (isSignedIn ? openSaved(entry.savedId) : dispatch({ type: "OPEN_SAVED", id: entry.savedId }))}
+                disabled={opening === entry.savedId}
+                className="group flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:bg-ink/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta disabled:opacity-60"
               >
                 <span className="flex flex-col gap-1">
                   <span className="text-2xl" style={{ fontFamily: "var(--font-serif)" }}>
@@ -100,7 +141,11 @@ function SavedDesigns({ onStart }) {
                     Saved {new Date(entry.updatedAt).toLocaleString()}
                   </span>
                 </span>
-                <ArrowUpRight className="h-5 w-5 shrink-0 text-ink/40 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                {opening === entry.savedId ? (
+                  <Loader2 className="h-5 w-5 shrink-0 animate-spin text-ink/40" />
+                ) : (
+                  <ArrowUpRight className="h-5 w-5 shrink-0 text-ink/40 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                )}
               </button>
             </li>
           ))}
