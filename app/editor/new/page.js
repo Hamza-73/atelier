@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { templateById, TEMPLATES } from "@/data/templates";
-import { cloneDesignFromTemplate } from "@/lib/store";
+import { cloneDesignFromTemplate } from "@/lib/clone-design";
 import EditorShell from "@/components/editor/EditorShell";
 
 async function NewEditorGate({ searchParams }) {
