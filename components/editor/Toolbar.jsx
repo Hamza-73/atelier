@@ -2,6 +2,7 @@
 
 import { ArrowLeft, PanelLeft, SlidersHorizontal, Save, Download, Globe, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useEditor } from "@/lib/store";
 import { saveDesign } from "@/lib/actions/designs";
@@ -11,6 +12,7 @@ export default function Toolbar() {
   const { state, dispatch } = useEditor();
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
+  const router = useRouter();
   const [justSaved, setJustSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -31,6 +33,10 @@ export default function Toolbar() {
         data: { paletteId, fontId, colorOverrides, sections },
       });
       dispatch({ type: "SAVE_DESIGN_RESULT", result });
+      // First save of a brand-new design (opened at /editor/new): move the
+      // URL to /editor/[id] so a refresh reloads this saved design instead
+      // of starting a fresh, unsaved one again.
+      if (!savedId) router.replace(`/editor/${result.id}`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1600);
     } catch (e) {
@@ -46,7 +52,7 @@ export default function Toolbar() {
       <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
-          onClick={() => dispatch({ type: "SET_SCREEN", screen: "gallery" })}
+          onClick={() => router.push("/")}
           aria-label="Back to gallery"
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
         >

@@ -91,18 +91,29 @@ export default function ColorSwatchPicker({ value, onChange }) {
                 />
               ))}
             </div>
-            <label className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-[0.15em] text-ink/40">Hex</span>
-              <input
-                value={draft}
-                onChange={(e) => commit(e.target.value)}
-                spellCheck={false}
-                className={cn(
-                  "w-full border bg-paper px-2 py-1.5 text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-terracotta",
-                  isValidHex(draft) ? "border-warmgrey focus-visible:border-ink" : "border-terracotta"
-                )}
-              />
-            </label>
+            <div className="flex items-stretch gap-1.5">
+              <label className="relative h-[34px] w-9 shrink-0 cursor-pointer overflow-hidden border border-warmgrey transition-colors hover:border-ink">
+                <input
+                  type="color"
+                  value={isValidHex(draft) ? draft : "#000000"}
+                  onChange={(e) => commit(e.target.value)}
+                  aria-label="Pick any color"
+                  className="absolute -left-1 -top-1 h-12 w-12 cursor-pointer appearance-none border-none bg-transparent p-0"
+                />
+              </label>
+              <label className="flex flex-1 flex-col gap-1">
+                <span className="text-[10px] uppercase tracking-[0.15em] text-ink/40">Hex</span>
+                <input
+                  value={draft}
+                  onChange={(e) => commit(e.target.value)}
+                  spellCheck={false}
+                  className={cn(
+                    "w-full border bg-paper px-2 py-1.5 text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-terracotta",
+                    isValidHex(draft) ? "border-warmgrey focus-visible:border-ink" : "border-terracotta"
+                  )}
+                />
+              </label>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

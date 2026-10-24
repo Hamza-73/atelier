@@ -25,7 +25,7 @@ export default function PreviewMode() {
       <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <button
           type="button"
-          onClick={() => dispatch({ type: "SET_SCREEN", screen: "editor" })}
+          onClick={() => dispatch({ type: "SET_PREVIEWING", previewing: false })}
           className="flex items-center gap-2 border border-ink/15 bg-paper/95 px-3 py-2 text-[11px] uppercase tracking-[0.15em] text-ink shadow-sm backdrop-blur-sm transition-colors hover:bg-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
         >
           <ArrowLeft className="h-3.5 w-3.5" />

@@ -255,7 +255,7 @@ export default function PublishDialog() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => dispatch({ type: "SET_SCREEN", screen: "preview" })}
+                      onClick={() => dispatch({ type: "SET_PREVIEWING", previewing: true })}
                       className="flex flex-1 items-center justify-center gap-1.5 border border-warmgrey px-4 py-2.5 text-[11px] uppercase tracking-[0.15em] text-ink/70 transition-colors hover:border-ink hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
